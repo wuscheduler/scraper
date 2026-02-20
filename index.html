@@ -8,15 +8,15 @@
 
     <h2>Files</h2>
     <ul id="file-list">
-        <li><a href="/data/index.json">index.json</a></li>
+        <li><a href="data/index.json">index.json</a></li>
     </ul>
 
     <script>
-        fetch("/data/index.json").then((resp) => {
+        fetch("data/index.json").then((resp) => {
             resp.json().then((index) => {
                 for (const term of index.terms) {
                     document.getElementById("file-list").innerHTML +=
-                        `<li><a href="/data/${encodeURIComponent(term)}.json">${term}.json</a></li>`;
+                        `<li><a href="data/${encodeURIComponent(term)}.json">${term}.json</a></li>`;
                 }
             });
         });
