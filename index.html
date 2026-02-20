@@ -1,0 +1,24 @@
+<!doctype html>
+<head>
+    <title>WUScheduler Scraper</title>
+</head>
+<body>
+    <h1>WUScheduler Scraper</h1>
+    This Github Pages site hosts the output of the WUScheduler scraper.
+
+    <h2>Files</h2>
+    <ul id="file-list">
+        <li><a href="/data/index.json">index.json</a></li>
+    </ul>
+
+    <script>
+        fetch("/data/index.json").then((resp) => {
+            resp.json().then((index) => {
+                for (const term of index.terms) {
+                    document.getElementById("file-list").innerHTML +=
+                        `<li><a href="/data/${encodeURIComponent(term)}.json">${term}.json</a></li>`;
+                }
+            });
+        });
+    </script>
+</body>
