@@ -8,8 +8,6 @@ const config = {
         { name: "2026 Summer", active: true, finalized: false },
         { name: "2026 Spring", active: false, finalized: true },
         { name: "2025 Fall", active: false, finalized: true },
-        { name: "2025 Spring", active: false, finalized: true },
-        { name: "2024 Fall", active: false, finalized: true },
     ],
     schools: {
         "Arts & Sciences": [

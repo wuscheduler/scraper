@@ -223,15 +223,36 @@ const main = async () => {
             resolve(config.dataDir, `${term}.json`),
             JSON.stringify({
                 courses: courses,
+                instructors: Array.from(
+                    new Set(
+                        courses.flatMap((course) => [
+                            ...course.sections.lecture.flatMap(
+                                (section) => section.instructor,
+                            ),
+                            ...(course.sections.lab?.flatMap(
+                                (section) => section.instructor,
+                            ) ?? []),
+                        ]),
+                    ),
+                ).sort(),
                 lastUpdated: Date.now(),
             }),
         );
     }
 
-    // fs.writeFileSync("../app/src/lib/catalog.json", JSON.stringify(courses));
     fs.writeFileSync(
         resolve(config.dataDir, "index.json"),
-        JSON.stringify({ terms: allTerms }),
+        JSON.stringify({
+            terms: allTerms,
+            schools: Object.fromEntries(
+                Object.entries(config.schools).map(([key, value]) => [
+                    key === "Washington University in St. Louis"
+                        ? "Other"
+                        : key,
+                    value,
+                ]),
+            ),
+        }),
     );
 };
 
