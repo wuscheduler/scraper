@@ -223,18 +223,23 @@ const main = async () => {
             resolve(config.dataDir, `${term}.json`),
             JSON.stringify({
                 courses: courses,
-                instructors: Array.from(
-                    new Set(
-                        courses.flatMap((course) => [
+                instructors: (() => {
+                    const map = {};
+                    for (const course of courses) {
+                        const all = [
                             ...course.sections.lecture.flatMap(
-                                (section) => section.instructor,
+                                (s) => s.instructor,
                             ),
                             ...(course.sections.lab?.flatMap(
-                                (section) => section.instructor,
+                                (s) => s.instructor,
                             ) ?? []),
-                        ]),
-                    ),
-                ).sort(),
+                        ];
+                        for (const name of new Set(all)) {
+                            (map[name] ??= []).push(course.id);
+                        }
+                    }
+                    return map;
+                })(),
                 lastUpdated: Date.now(),
             }),
         );
