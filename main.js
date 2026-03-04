@@ -150,13 +150,52 @@ const parseCatalog = (html, school) => {
     return courses;
 };
 
+const CATALOG_URL =
+    "https://registrar.washu.edu/classes-registration/class-schedule-search/";
+
+/**
+ * Parse schools and departments from an AJAX response HTML.
+ */
+const parseDropdowns = (html) => {
+    const $ = cheerio.load(html);
+    const schools = [];
+    $("#schoolselect option").each((_, el) => {
+        const val = $(el).attr("value");
+        if (val) schools.push(val);
+    });
+    const depts = [];
+    $("#departmentselect option").each((_, el) => {
+        const val = $(el).attr("value");
+        if (val) depts.push(val);
+    });
+    return { schools, depts };
+};
+
+/**
+ * Scrape the list of schools available for a given term.
+ */
+const scrapeSchools = async (term) => {
+    // POST with an arbitrary school to get the response for this term;
+    // the school dropdown in the response lists all schools for the term.
+    const html = await downloadCatalog(term, "Arts & Sciences", undefined);
+    const { schools } = parseDropdowns(html);
+    return schools;
+};
+
+/**
+ * Scrape the list of departments for a given term and school.
+ * Returns an empty array if the school has no department subdivisions.
+ */
+const scrapeDepartments = async (term, school) => {
+    const html = await downloadCatalog(term, school, undefined);
+    const { depts } = parseDropdowns(html);
+    return { depts, html };
+};
+
 /**
  * Download the registrar's course catalog page for the specified term, school and, optionally, department.
  */
 const downloadCatalog = async (term, school, dept) => {
-    const url =
-        "https://registrar.washu.edu/classes-registration/class-schedule-search/";
-
     const body = {
         term: term,
         school: school,
@@ -166,7 +205,7 @@ const downloadCatalog = async (term, school, dept) => {
         body.department = dept;
     }
 
-    const res = await fetch(url, {
+    const res = await fetch(CATALOG_URL, {
         method: "POST",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
@@ -191,7 +230,6 @@ const main = async () => {
     fs.mkdirSync(config.dataDir, { recursive: true });
     let terms = config.terms;
     let allTerms = config.terms.map((term) => term.name);
-    let schools = config.schools;
 
     const indexPath = path.resolve(config.dataDir, "index.json");
     if (fs.existsSync(indexPath)) {
@@ -204,18 +242,27 @@ const main = async () => {
     terms = terms.map((term) => term.name);
     for (const term of terms) {
         console.log(`Scraping catalog for ${term}`);
+        const schoolNames = await scrapeSchools(term);
+        console.log(`\tFound ${schoolNames.length} schools`);
         const courses = [];
-        for (const school of Object.keys(schools)) {
+        const schools = {};
+        for (const school of schoolNames) {
+            const displayName =
+                school === "Washington University in St. Louis"
+                    ? "Other"
+                    : school;
             console.log(`\t${school}`);
-            if (schools[school].length > 0) {
-                for (const dept of schools[school]) {
+            const { depts, html } = await scrapeDepartments(term, school);
+            schools[displayName] = depts;
+            if (depts.length > 0) {
+                for (const dept of depts) {
                     console.log(`\t\t${dept}`);
                     const catalog = await downloadCatalog(term, school, dept);
                     courses.push(...parseCatalog(catalog, school));
                 }
             } else {
-                const catalog = await downloadCatalog(term, school, undefined);
-                courses.push(...parseCatalog(catalog, school));
+                // If there are no departments, the initial fetch contains all courses. 
+                courses.push(...parseCatalog(html, school));
             }
         }
 
@@ -240,6 +287,7 @@ const main = async () => {
                     }
                     return map;
                 })(),
+                schools: schools,
                 lastUpdated: Date.now(),
             }),
         );
@@ -249,14 +297,6 @@ const main = async () => {
         resolve(config.dataDir, "index.json"),
         JSON.stringify({
             terms: allTerms,
-            schools: Object.fromEntries(
-                Object.entries(config.schools).map(([key, value]) => [
-                    key === "Washington University in St. Louis"
-                        ? "Other"
-                        : key,
-                    value,
-                ]),
-            ),
         }),
     );
 };
