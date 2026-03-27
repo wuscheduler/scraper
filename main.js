@@ -4,6 +4,8 @@ import config from "./config.js";
 import { randomUUID } from "crypto";
 import path, { resolve } from "path";
 
+const NO_DEPARTMENT_SCHOOLS = new Set(["Olin Business School"]);
+
 /**
  * Parses an HTML course catalog page into list of JS objects.
  */
@@ -188,7 +190,9 @@ const scrapeSchools = async (term) => {
  */
 const scrapeDepartments = async (term, school) => {
     const html = await downloadCatalog(term, school, undefined);
-    const { depts } = parseDropdowns(html);
+    const { depts } = NO_DEPARTMENT_SCHOOLS.has(school)
+        ? { depts: [] }
+        : parseDropdowns(html);
     return { depts, html };
 };
 
@@ -261,7 +265,7 @@ const main = async () => {
                     courses.push(...parseCatalog(catalog, school));
                 }
             } else {
-                // If there are no departments, the initial fetch contains all courses. 
+                // If there are no departments, the initial fetch contains all courses.
                 courses.push(...parseCatalog(html, school));
             }
         }
