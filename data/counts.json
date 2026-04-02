@@ -1,0 +1,24 @@
+{
+    "2026 Fall": {
+        "Arts & Sciences": 3350,
+        "Brown School": 114,
+        "McKelvey School of Engineering": 1079,
+        "Olin Business School": 356,
+        "Sam Fox School of Design & Visual Arts": 210,
+        "School of Law": 109,
+        "School of Medicine": 161,
+        "School of Public Health": 74,
+        "Other": 10
+    },
+    "2026 Summer": {
+        "Arts & Sciences": 92,
+        "Brown School": 66,
+        "McKelvey School of Engineering": 357,
+        "Olin Business School": 65,
+        "Sam Fox School of Design & Visual Arts": 7,
+        "School of Continuing & Professional Studies": 72,
+        "School of Law": 19,
+        "School of Medicine": 56,
+        "School of Public Health": 42
+    }
+}

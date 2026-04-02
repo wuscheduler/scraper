@@ -156,6 +156,17 @@ const CATALOG_URL =
     "https://registrar.washu.edu/classes-registration/class-schedule-search/";
 
 /**
+ * Parse the section count from .scpi__counter in an AJAX response HTML.
+ * Returns null if the element is not found or its text is not a number.
+ */
+const parseCounter = (html) => {
+    const $ = cheerio.load(html);
+    const text = $(".scpi__counter").first().text().trim();
+    const n = parseInt(text, 10);
+    return isNaN(n) ? null : n;
+};
+
+/**
  * Parse schools and departments from an AJAX response HTML.
  */
 const parseDropdowns = (html) => {
@@ -198,8 +209,9 @@ const scrapeDepartments = async (term, school) => {
 
 /**
  * Download the registrar's course catalog page for the specified term, school and, optionally, department.
+ * Pass paged > 1 to fetch subsequent pages (requires pagination-submit to be set).
  */
-const downloadCatalog = async (term, school, dept) => {
+const downloadCatalog = async (term, school, dept, paged = 1) => {
     const body = {
         term: term,
         school: school,
@@ -207,6 +219,11 @@ const downloadCatalog = async (term, school, dept) => {
 
     if (dept) {
         body.department = dept;
+    }
+
+    if (paged > 1) {
+        body.paged = String(paged);
+        body["pagination-submit"] = "Next Page";
     }
 
     const res = await fetch(CATALOG_URL, {
@@ -230,6 +247,38 @@ const downloadCatalog = async (term, school, dept) => {
     return await res.text();
 };
 
+/**
+ * Returns the next page number if the HTML contains a "Next Page" pagination button,
+ * otherwise returns null.
+ */
+const getNextPage = (html) => {
+    const $ = cheerio.load(html);
+    const nextPageInput = $("#current-page");
+    if (nextPageInput.length && $('[name="pagination-submit"]').length) {
+        return parseInt(nextPageInput.val());
+    }
+    return null;
+};
+
+/**
+ * Downloads all remaining pages of the catalog starting from the second page,
+ * given the already-fetched first-page HTML. Returns an array of all page HTMLs
+ * including the first.
+ */
+const downloadAllPages = async (term, school, dept, firstPageHtml) => {
+    const pages = [firstPageHtml];
+    let next = getNextPage(firstPageHtml);
+    while (next !== null) {
+        const html = await downloadCatalog(term, school, dept, next);
+        pages.push(html);
+        const nextNext = getNextPage(html);
+        // Stop if next page number doesn't advance (avoid infinite loop)
+        if (nextNext === null || nextNext <= next) break;
+        next = nextNext;
+    }
+    return pages;
+};
+
 const main = async () => {
     fs.mkdirSync(config.dataDir, { recursive: true });
     let terms = config.terms;
@@ -244,12 +293,14 @@ const main = async () => {
     }
 
     terms = terms.map((term) => term.name);
+    const counts = {};
     for (const term of terms) {
         console.log(`Scraping catalog for ${term}`);
         const schoolNames = await scrapeSchools(term);
         console.log(`\tFound ${schoolNames.length} schools`);
         const courses = [];
         const schools = {};
+        counts[term] = {};
         for (const school of schoolNames) {
             const displayName =
                 school === "Washington University in St. Louis"
@@ -258,15 +309,37 @@ const main = async () => {
             console.log(`\t${school}`);
             const { depts, html } = await scrapeDepartments(term, school);
             schools[displayName] = depts;
+            counts[term][displayName] = parseCounter(html);
             if (depts.length > 0) {
                 for (const dept of depts) {
                     console.log(`\t\t${dept}`);
-                    const catalog = await downloadCatalog(term, school, dept);
-                    courses.push(...parseCatalog(catalog, school));
+                    const firstHtml = await downloadCatalog(term, school, dept);
+                    const pages = await downloadAllPages(
+                        term,
+                        school,
+                        dept,
+                        firstHtml,
+                    );
+                    try {
+                        for (const catalog of pages) {
+                            courses.push(...parseCatalog(catalog, school));
+                        }
+                    } catch (e) {
+                        console.error(`\tFAILED: ${dept}`);
+                    }
                 }
             } else {
-                // If there are no departments, the initial fetch contains all courses.
-                courses.push(...parseCatalog(html, school));
+                // If there are no departments, fetch all pages using the html already
+                // retrieved by scrapeDepartments as the first page.
+                const pages = await downloadAllPages(
+                    term,
+                    school,
+                    undefined,
+                    html,
+                );
+                for (const catalog of pages) {
+                    courses.push(...parseCatalog(catalog, school));
+                }
             }
         }
 
@@ -302,6 +375,10 @@ const main = async () => {
         JSON.stringify({
             terms: allTerms,
         }),
+    );
+    fs.writeFileSync(
+        resolve(config.dataDir, "counts.json"),
+        JSON.stringify(counts),
     );
 };
 
