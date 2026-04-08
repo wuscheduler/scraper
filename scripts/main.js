@@ -5,6 +5,7 @@ import { randomUUID } from "crypto";
 import path, { resolve } from "path";
 
 const NO_DEPARTMENT_SCHOOLS = new Set(["Olin Business School"]);
+const ATTRIBUTES = JSON.parse(fs.readFileSync("./data/attributes.json"));
 
 /**
  * Parses an HTML course catalog page into list of JS objects.
@@ -38,6 +39,8 @@ const parseCatalog = (html, school) => {
                 .trim(),
             level: $course.find(".scpi-class__details--title").text().trim(),
         };
+
+        course["attributes"] = ATTRIBUTES[course.catalogNumber] || {};
 
         if (course.id === undefined) {
             course.id = randomUUID();
