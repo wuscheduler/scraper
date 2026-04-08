@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as cheerio from "cheerio";
-import config from "./config.js";
+import config from "../config.js";
 import { randomUUID } from "crypto";
 import path, { resolve } from "path";
 
@@ -309,11 +309,12 @@ const main = async () => {
             console.log(`\t${school}`);
             const { depts, html } = await scrapeDepartments(term, school);
             schools[displayName] = depts;
-            counts[term][displayName] = parseCounter(html);
             if (depts.length > 0) {
+                let deptCounterSum = 0;
                 for (const dept of depts) {
                     console.log(`\t\t${dept}`);
                     const firstHtml = await downloadCatalog(term, school, dept);
+                    deptCounterSum += parseCounter(firstHtml) ?? 0;
                     const pages = await downloadAllPages(
                         term,
                         school,
@@ -328,9 +329,11 @@ const main = async () => {
                         console.error(`\tFAILED: ${dept}`);
                     }
                 }
+                counts[term][displayName] = deptCounterSum;
             } else {
                 // If there are no departments, fetch all pages using the html already
                 // retrieved by scrapeDepartments as the first page.
+                counts[term][displayName] = parseCounter(html);
                 const pages = await downloadAllPages(
                     term,
                     school,
