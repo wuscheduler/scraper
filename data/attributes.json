@@ -3257,14 +3257,8 @@
       "HUM",
       "IS"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "CLASSICS 1160": {
@@ -3344,14 +3338,8 @@
     "Bus": [
       "IS"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "CLASSICS 1350": {
@@ -3386,14 +3374,8 @@
     "Bus": [
       "HUM"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "CLASSICS 1900": {
@@ -3471,14 +3453,8 @@
     "Bus": [
       "HUM"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "CLASSICS 2410": {
@@ -3525,14 +3501,8 @@
       "LCDC",
       "WI"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "CLASSICS 3010": {
@@ -3705,18 +3675,12 @@
       "HUM",
       "IS"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
     ],
     "History": [
       "EUR",
       "PREMOD"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "CLASSICS 3450": {
@@ -3743,18 +3707,12 @@
     "Bus": [
       "HUM"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
     ],
     "History": [
       "EUR",
       "PREMOD"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "CLASSICS 3540": {
@@ -3858,18 +3816,12 @@
     "CFH": [
       "MEDHUM"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
     ],
     "History": [
       "EUR",
       "PREMOD"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "CLASSICS 3830": {
@@ -3979,14 +3931,10 @@
       "HUM"
     ],
     "Design": [
-      "HIST",
-      "HUM"
+      "HIST"
     ],
     "Eng": [
       "HUM"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "CLASSICS 4260": {
@@ -4047,14 +3995,8 @@
       "HUM",
       "LCDC"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "CLASSICS 4640": {
@@ -4103,14 +4045,8 @@
     "Bus": [
       "HUM"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "CLASSICS 4800": {
@@ -20449,14 +20385,8 @@
     "ArtSci IQ": [
       "HUM"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "CHST 4070": {},
@@ -20548,6 +20478,7 @@
       "HUM"
     ],
     "Writing": [
+      "COREFICT",
       "FICT"
     ]
   },
@@ -20763,6 +20694,7 @@
       "HUM"
     ],
     "Writing": [
+      "COREFICT",
       "FICT"
     ]
   },
@@ -21013,6 +20945,7 @@
       "HUM"
     ],
     "Writing": [
+      "COREFICT",
       "FICT"
     ]
   },
@@ -22163,14 +22096,8 @@
     "Bus": [
       "EV"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "JAPAN 3360": {
@@ -22263,14 +22190,8 @@
       "HUM",
       "LCDC"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "JAPAN 4450": {
@@ -22278,14 +22199,8 @@
       "HUM",
       "LCDC"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "JAPAN 4455": {
@@ -23729,14 +23644,8 @@
     "Bus": [
       "HUM"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "COMPLITTHT 3062": {
@@ -23950,15 +23859,11 @@
     "Bus": [
       "HUM"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
     ],
     "SamFox": [
-      "FAVIS",
-      "SFHUM"
+      "FAVIS"
     ]
   },
   "COMPLITTHT 3530": {
@@ -24079,9 +23984,6 @@
     ]
   },
   "COMPLITTHT 3900": {
-    "Design": [
-      "HUM"
-    ],
     "WashU": [
       "IS"
     ]
@@ -24267,14 +24169,8 @@
     "ArtSci IQ": [
       "HUM"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "COMPLITTHT 4350": {
@@ -24359,14 +24255,8 @@
     "ArtSci IQ": [
       "HUM"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "COMPLITTHT 4510": {
@@ -28279,9 +28169,6 @@
     "ArtSci IQ": [
       "SSC"
     ],
-    "Design": [
-      "SOC"
-    ],
     "Eng": [
       "SOC"
     ],
@@ -28293,9 +28180,6 @@
     "ArtSci IQ": [
       "SSC"
     ],
-    "Design": [
-      "SOC"
-    ],
     "Eng": [
       "SOC"
     ],
@@ -28306,9 +28190,6 @@
   "EDUC 4930": {
     "ArtSci IQ": [
       "SSC"
-    ],
-    "Design": [
-      "SOC"
     ],
     "Eng": [
       "SOC"
@@ -28328,9 +28209,6 @@
   "EDUC 4990": {
     "ArtSci IQ": [
       "SSC"
-    ],
-    "Design": [
-      "SOC"
     ],
     "Eng": [
       "SOC"
@@ -32598,14 +32476,8 @@
     "CFH": [
       "MEDHUM"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "ITAL 2900": {
@@ -32614,14 +32486,8 @@
       "LCDC",
       "SC"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "ITAL 2910": {
@@ -32680,14 +32546,8 @@
     "Bus": [
       "IS"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "ITAL 3190": {
@@ -32824,14 +32684,8 @@
     "Bus": [
       "IS"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "ITAL 3340": {
@@ -34314,14 +34168,8 @@
       "BA",
       "IS"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "GLOBAL 2996": {
@@ -34453,14 +34301,8 @@
     "Bus": [
       "IS"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "GLOBAL 3641": {
@@ -34470,9 +34312,6 @@
     ],
     "Bus": [
       "BA"
-    ],
-    "Design": [
-      "SOC"
     ],
     "Eng": [
       "SOC"
@@ -34540,14 +34379,8 @@
     "Bus": [
       "IS"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "GLOBAL 3832": {
@@ -34598,14 +34431,8 @@
       "HUM",
       "IS"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "GLOBAL 3926": {
@@ -34657,14 +34484,8 @@
     "Bus": [
       "HUM"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "GLOBAL 4200": {
@@ -34827,14 +34648,8 @@
     "Bus": [
       "HUM"
     ],
-    "Design": [
-      "HUM"
-    ],
     "Eng": [
       "HUM"
-    ],
-    "SamFox": [
-      "SFHUM"
     ]
   },
   "GLOBAL 4869": {
