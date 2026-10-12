@@ -1,112 +1,114 @@
 import { load } from "cheerio";
 import * as fs from "fs";
 
+const BASE = "https://bulletin.wustl.edu";
+
 function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function fetchWithRetry(url, retries = 3) {
-  for (let attempt = 1; attempt <= retries; attempt++) {
-    try {
-      const res = await fetch(url, {
-        headers: {
-          "User-Agent": "Mozilla/5.0",
-        },
-      });
+async function fetchWithRetry(url, options = {}, retries = 3) {
+    for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+            const res = await fetch(url, {
+                ...options,
+                headers: { "User-Agent": "Mozilla/5.0", ...options.headers },
+            });
 
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status} for ${url}`);
-      }
+            if (!res.ok) {
+                throw new Error(`HTTP ${res.status} for ${url}`);
+            }
 
-      return await res.text();
-    } catch (err) {
-      if (attempt === retries) throw err;
+            return await res.text();
+        } catch (err) {
+            if (attempt === retries) throw err;
 
-      console.log(`Retry ${attempt}/${retries - 1} failed for ${url}`);
-      await sleep(1000 * attempt);
+            console.log(`Retry ${attempt}/${retries - 1} failed for ${url}`);
+            await sleep(1000 * attempt);
+        }
     }
-  }
 }
 
-async function scrapeBulletinPage(url) {
-  console.log(`Scraping ${url}`);
+// Get list of subjects
+async function fetchSubjects() {
+    const text = await fetchWithRetry(
+        `${BASE}/course-search/api/?page=fose&route=search`,
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ other: { srcdb: "" }, criteria: [] }),
+        },
+    );
+    const { results } = JSON.parse(text);
 
-  const html = await fetchWithRetry(url);
-  const $ = load(html);
-  const courses = {};
+    return [
+        ...new Set(
+            results.map(({ code }) => code.slice(0, code.lastIndexOf(" "))),
+        ),
+    ].sort();
+}
 
-  $(".courseblock").each((i, el) => {
-    const title = $(el)
-      .find(".courseblocktitle")
-      .text()
-      .trim()
-      .split(/\s+/)
-      .slice(0, 2)
-      .join(" ")
-      .replace(/\u00a0/g, " ");
+// Fetch one subject and parse the attributes of all courses
+async function scrapeSubject(subject) {
+    const url = `${BASE}/ribbit/?page=getcourse.rjs&subject=${encodeURIComponent(subject)}`;
+    const xml = await fetchWithRetry(url);
+    const $xml = load(xml, { xml: true });
+    const courses = {};
 
-    const attrs = {};
+    $xml("course").each((i, courseEl) => {
+        const code = ($xml(courseEl).attr("code") || "")
+            .replace(/ /g, " ")
+            .trim();
+        if (!code) return;
 
-    $(el)
-      .find(".courseblockextra .crs_attrstr")
-      .each((i, attr) => {
-        const text = $(attr).text().trim();
-        const idx = text.indexOf(":");
-        if (idx === -1) return;
+        const $ = load($xml(courseEl).text());
+        const attrs = {};
 
-        const key = text.slice(0, idx).trim();
-        const value = text.slice(idx + 1).trim();
+        $(".courseblockextra .crs_attrstr").each((i, attr) => {
+            const text = $(attr).text().replace(/ /g, " ").trim();
+            const idx = text.indexOf(":");
+            if (idx === -1) return;
 
-        attrs[key] = value
-          ? value.split(",").map((x) => x.trim()).filter(Boolean)
-          : [];
-      });
+            const key = text.slice(0, idx).trim();
+            const value = text.slice(idx + 1).trim();
 
-    if (title) courses[title] = attrs;
-  });
+            attrs[key] = value
+                ? value.split(",").map((x) => x.trim()).filter(Boolean)
+                : [];
+        });
 
-  return courses;
+        courses[code] = attrs;
+    });
+
+    return courses;
 }
 
 async function main() {
-  const indexUrl = "https://bulletin.wustl.edu/undergrad/artsci/fields/";
-  const html = await fetchWithRetry(indexUrl);
-  const $ = load(html);
+    const subjects = process.env.SUBJECTS
+        ? process.env.SUBJECTS.split(",")
+        : await fetchSubjects();
 
-  const hrefs = $('a[href^="/undergrad/artsci/"]')
-    .map((i, el) => $(el).attr("href"))
-    .get();
-
-  const base = "https://bulletin.wustl.edu";
-
-  const filteredHrefs = [...new Set(hrefs)].filter(
-    (href) =>
-      href &&
-      !href.includes("/requirements/") &&
-      !href.includes("/honors/") &&
-      !href.includes("/policies/") &&
-      !href.includes("/administration/") &&
-      !href.includes("/majors/") &&
-      !href.includes("/minors/") &&
-      !href.includes("/additional/") &&
-      !href.includes("/summer/")
-  );
-
-  const allCourses = {};
-
-  for (const href of filteredHrefs) {
-    try {
-      const pageCourses = await scrapeBulletinPage(base + href);
-      Object.assign(allCourses, pageCourses);
-
-      await sleep(500);
-    } catch (err) {
-      console.error(`Failed to scrape ${base + href}:`, err.message);
+    console.log(`Found ${subjects.length} subjects`);
+    const allCourses = {};
+    for (const subject of subjects) {
+        try {
+            const courses = await scrapeSubject(subject);
+            Object.assign(allCourses, courses);
+            console.log(`${subject}: ${Object.keys(courses).length} courses`);
+        } catch (err) {
+            console.error(`Failed to scrape ${subject}:`, err.message);
+        }
+        await sleep(250);
     }
-  }
 
-  fs.writeFileSync("data/attributes.json", JSON.stringify(allCourses, null, 2));
-  console.log(`Saved ${Object.keys(allCourses).length} courses`);
+    const sorted = Object.fromEntries(
+        Object.keys(allCourses)
+            .sort()
+            .map((code) => [code, allCourses[code]]),
+    );
+
+    fs.writeFileSync("data/attributes.json", JSON.stringify(sorted, null, 2));
+    console.log(`Saved ${Object.keys(sorted).length} courses`);
 }
 
 await main();
